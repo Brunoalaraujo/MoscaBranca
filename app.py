@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
 import requests
+import json
 
 app = FastAPI()
 my_url = os.getenv('MY_URL')
@@ -12,17 +13,25 @@ def text_sending():
     '''
     Essa função envia o texto para a API do LM Studio e retorna a resposta da API
     '''
+    print('Digite o texto que deseja enviar para a API do LM Studio: ')
+    text = input()
     response = requests.post(
         my_url,
         json={
             'api_key': api_key, 
             'messages': [{ 
                 'role': 'user',
-                'content': 'explique o que é um LLM, com exemplos'}],
-            'max_tokens': 5000,
+                'content': f'{text}'}],
+            'max_tokens': 8000,
             })
+    
     print(response.status_code)
-    print(response.text)
+    
+    json_data = response.text
+    data = json.loads(json_data)
+    content_return = data['choices'][0]['message']['content']
+    
+    print(content_return)
 
 def main():
     text_sending()
